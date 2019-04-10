@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/lpil/swampling/pkg/swampling"
 	irc "github.com/thoj/go-ircevent"
 )
 
@@ -16,8 +17,6 @@ const channel = "#lpil"
 const serverssl = "irc.freenode.net:7000"
 
 func main() {
-	defer fmt.Println("\nGoodbye")
-
 	irccon := irc.IRC(nick, "IRCTestSSL")
 	irccon.VerboseCallbackHandler = false
 
@@ -39,10 +38,16 @@ func main() {
 		return
 	}
 
+	swampling.Hello()
+
 	go irccon.Loop()
+
+	defer fmt.Println("\nGoodbye")
 
 	waitForExitSignal()
 }
+
+// Other
 
 func waitForExitSignal() {
 	exitSignal := make(chan os.Signal)
