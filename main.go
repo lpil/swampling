@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/lpil/swampling/pkg/swampling"
@@ -27,8 +26,12 @@ func main() {
 	irccon.AddCallback("001", func(e *irc.Event) { irccon.Join(channel) })
 	irccon.AddCallback("366", func(e *irc.Event) {})
 
-	irccon.AddCallback("PRIVMSG",
-		handlePRIVMSG(irccon))
+	bot := swampling.IrcBot(irccon, channel)
+
+	irccon.AddCallback("PRIVMSG", func(event *irc.Event) {
+		msg := swampling.Message{Text: event.Message(), From: event.Nick}
+		bot.HandleMessage(msg)
+	})
 
 	// Connect
 	err := irccon.Connect(serverssl)
@@ -50,14 +53,4 @@ func waitForExitSignal() {
 	exitSignal := make(chan os.Signal)
 	signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
 	<-exitSignal
-}
-
-func handlePRIVMSG(irccon *irc.Connection) func(*irc.Event) {
-	return func(event *irc.Event) {
-		if strings.HasPrefix(event.Message(), swampling.Nick) {
-
-			irccon.Privmsg("#lpil", "Hello!")
-		}
-		return
-	}
 }

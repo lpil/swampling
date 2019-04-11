@@ -1,21 +1,52 @@
 package swampling
 
-import "testing"
+import (
+	"fmt"
+	"reflect"
+	"testing"
+)
 
-func TestReactionName(t *testing.T) {
+type mockContext struct {
+	performed []string
+}
+
+func (ctx *mockContext) sendResponse(msg string) {
+	fmt.Println("sending response")
+	ctx.performed = append(ctx.performed, "sendResponse:"+msg)
+}
+
+func makeTestContext() mockContext {
+	return mockContext{
+		performed: make([]string, 0),
+	}
+}
+
+func TestSayHelloReactionExec(t *testing.T) {
 	tables := []struct {
-		r reaction
-		n string
+		reaction reaction
+		expected []string
 	}{
-		{noOpReaction{}, "noOpReaction"},
-		{sayHelloReaction{}, "sayHelloReaction"},
+		{
+			reaction: sayHelloReaction{to: "Louis"},
+			expected: []string{"sendResponse:Hello Louis!"},
+		},
+
+		{
+			reaction: sayHelloReaction{to: "Emma"},
+			expected: []string{"sendResponse:Hello Emma!"},
+		},
 	}
 
 	for _, table := range tables {
-		name := ReactionName(table.r)
-		if name != table.n {
-			t.Errorf("ReactionName(%v) incorrect,\ngot:  %v,\nwant: %v.",
-				table.r, name, table.n)
+		ctx := makeTestContext()
+		table.reaction.exec(&ctx)
+
+		if !reflect.DeepEqual(ctx.performed, table.expected) {
+			t.Errorf("%T%+v.exec()\n\nperformed: %v,\nexpected:  %v.",
+				table.reaction,
+				table.reaction,
+				ctx.performed,
+				table.expected)
 		}
 	}
 }

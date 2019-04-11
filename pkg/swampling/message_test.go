@@ -8,23 +8,58 @@ func TestMessageReaction(t *testing.T) {
 		reaction reaction
 	}{
 		{
-			Message{from: "lpil", text: "Hello"},
+			Message{From: "lpil", Text: "Hello"},
 			noOpReaction{},
 		},
 
 		{
-			Message{from: "lpil", text: Nick + " Hello"},
+			Message{From: "lpil", Text: Nick + " Hello"},
 			sayHelloReaction{to: "lpil"},
 		},
 
 		{
-			Message{from: "lpil", text: "@" + Nick + " Hello"},
+			Message{From: "lpil", Text: "@" + Nick + " Hello"},
 			sayHelloReaction{to: "lpil"},
 		},
 
 		{
-			Message{from: "jane", text: Nick + " Hello"},
+			Message{From: "jane", Text: Nick + " Hello"},
 			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + "    Hello"},
+			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + "    heLLo"},
+			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + "    hellowekfjwf"},
+			noOpReaction{},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + " Hi"},
+			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + " Hi!"},
+			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "jane", Text: Nick + " Hey"},
+			sayHelloReaction{to: "jane"},
+		},
+
+		{
+			Message{From: "lpil", Text: Nick + " huh?"},
+			noOpReaction{},
 		},
 	}
 
