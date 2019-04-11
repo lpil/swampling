@@ -12,12 +12,11 @@ import (
 	irc "github.com/thoj/go-ircevent"
 )
 
-const nick = "lpil-bot"
 const channel = "#lpil"
 const serverssl = "irc.freenode.net:7000"
 
 func main() {
-	irccon := irc.IRC(nick, "IRCTestSSL")
+	irccon := irc.IRC(swampling.Nick, "IRCTestSSL")
 	irccon.VerboseCallbackHandler = false
 
 	irccon.Debug = true
@@ -38,8 +37,6 @@ func main() {
 		return
 	}
 
-	swampling.Hello()
-
 	go irccon.Loop()
 
 	defer fmt.Println("\nGoodbye")
@@ -57,7 +54,7 @@ func waitForExitSignal() {
 
 func handlePRIVMSG(irccon *irc.Connection) func(*irc.Event) {
 	return func(event *irc.Event) {
-		if strings.HasPrefix(event.Message(), nick) {
+		if strings.HasPrefix(event.Message(), swampling.Nick) {
 
 			irccon.Privmsg("#lpil", "Hello!")
 		}
